@@ -12,7 +12,7 @@
         <div class="header">
             <div>
                 <h1>library</h1>
-                <button>
+                <button class="addbook">
                     + Add Book
                 </button>
             </div>
@@ -21,20 +21,23 @@
             <div class="overlay">
                 <div class="each">
                     <label>Book Name:</label>
-                    <input type="text" required/>
+                    <input type="text" id="book" required/>
                 </div>
                 <div class="each">
                     <label>Author:</label>
-                    <input type="text" required/>
+                    <input type="text" id="author" required/>
                 </div>
                 <div class="each">
                     <label>Pages:</label>
-                    <input type="number" required/>
+                    <input type="number" id="pages" required/>
                 </div>
                 <div class="each">
-                    <label>Pages:</label>
-                    <input type="checkbox" id="haveread" value="read">
+                    <label> Completed?:</label>
+                    <div>
+                        <input type="checkbox" id="haveread" value="read">
+                    </div>
                 </div>
+                <button class="submit">Submit</button>
             </div>
         </div>
         <div class="main-body">
