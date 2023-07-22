@@ -78,7 +78,8 @@ body {
     text-align: center;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+    padding: 5px;
 }
 
 .main-body .thebook .indicator {
@@ -95,15 +96,28 @@ body {
     padding-bottom: 15px;
     font-style: italic;
     font-weight: 500;
+    font-size: 23px;
 }
 
 .main-body .thebook h2 {
     padding-bottom: 15px;
+    font-size: 20px;
 }
 
 .main-body .thebook h3 {
     padding-bottom: 30px;
     font-weight: 300;
+}
+
+.thebook h1,
+.thebook h2,
+.thebook h3 {
+    white-space: normal;
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
 }
 
 .main-body .thebook .remover {
@@ -123,7 +137,7 @@ body {
     z-index: 10;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     position: fixed;
 }
 
@@ -177,6 +191,3 @@ body {
 .popup .overlay button:active {
     transform: scale(0.95);
 }
-
-
-
