@@ -6,7 +6,6 @@ const book = document.getElementById("book");
 const pages = document.getElementById("pages");
 const haveread = document.getElementById("haveread");
 const container = document.querySelector(".main-body");
-const removebutton = document.querySelector(".remover");
 
 addbutton.addEventListener("click", () => {
   popup.style.display = "flex";
@@ -16,96 +15,135 @@ submit.addEventListener("click", () => {
   addBookToLibrary();
 });
 
-let myLibrary = [];
-
-function Book(title, author, pages, read) {
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.read = read;
+class Book {
+  constructor(title, author, pages, read) {
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.read = read;
+  }
 }
 
+let myLibrary = [];
+
 function addBookToLibrary() {
-  const bookValue = book.value;
-  const authorValue = author.value;
+  const bookValue = book.value.trim();
+  const authorValue = author.value.trim();
   const pagesValue = parseInt(pages.value);
   const beenRead = haveread.checked;
 
   if (
-    bookValue.trim() !== "" &&
-    authorValue.trim() !== "" &&
-    !isNaN(pagesValue)
+    bookValue === "" ||
+    authorValue === "" ||
+    isNaN(pagesValue) ||
+    pagesValue <= 0
   ) {
-    const newBook = new Book(bookValue, authorValue, pagesValue, beenRead);
-    myLibrary.push(newBook);
+    alert("Please enter valid book information.");
+    return;
+  }
 
-    let one = document.createElement("h1");
-    let two = document.createElement("h2");
-    let three = document.createElement("h3");
+  const newBook = new Book(bookValue, authorValue, pagesValue, beenRead);
+  myLibrary.push(newBook);
 
-    one.innerHTML = bookValue;
-    two.innerHTML = authorValue;
-    three.innerHTML = pagesValue;
+  saveLibraryToLocalStorage();
 
-    let four = document.createElement("button");
-    four.className = "indicator";
-    four.addEventListener("click", () => {
-      if (newBook.read) {
-        four.style.color = "black";
-        four.style.backgroundColor = "red";
-        four.innerHTML = "Incomplete";
-        newBook.read = false;
-      } else {
-        four.style.color = "white";
-        four.style.backgroundColor = "green";
-        four.innerHTML = "Complete";
-        newBook.read = true;
-      }
+  renderBooks();
+
+  popup.style.display = "none";
+
+  book.value = "";
+  author.value = "";
+  pages.value = "";
+}
+
+function saveLibraryToLocalStorage() {
+  localStorage.setItem("library", JSON.stringify(myLibrary));
+}
+
+function renderBooks() {
+  container.innerHTML = "";
+
+  myLibrary.forEach((book, index) => {
+    const divToRemove = document.createElement("div");
+    divToRemove.className = "thebook";
+
+    const indicatorButton = document.createElement("button");
+    indicatorButton.className = "indicator";
+    indicatorButton.setAttribute("data-read", book.read);
+    updateButtonAppearance(indicatorButton);
+
+    indicatorButton.addEventListener("click", () => {
+      book.read = !book.read;
+      indicatorButton.setAttribute("data-read", book.read);
+      updateButtonAppearance(indicatorButton);
+
+      saveLibraryToLocalStorage();
     });
 
-    let five = document.createElement("button");
-    five.className = "remover";
-    five.innerHTML = "Remove";
-    five.setAttribute("data-index", myLibrary.length - 1);
+    const one = document.createElement("h1");
+    one.innerHTML = book.title;
 
-    let six = document.createElement("div");
-    six.className = "thebook";
+    const two = document.createElement("h2");
+    two.innerHTML = book.author;
 
-    if (haveread.checked) {
-      four.style.backgroundColor = "green";
-      four.style.color = "white";
-      four.innerHTML = "Complete";
-    } else {
-      four.style.backgroundColor = "red";
-      four.style.color = "black";
-      four.innerHTML = "Incomplete";
-    }
+    const three = document.createElement("h3");
+    three.innerHTML = book.pages;
 
-    six.appendChild(four);
-    six.appendChild(one);
-    six.appendChild(two);
-    six.appendChild(three);
-    six.appendChild(five);
+    const removeButton = document.createElement("button");
+    removeButton.className = "remover";
+    removeButton.innerHTML = "Remove";
+    removeButton.setAttribute("data-index", index);
 
-    container.appendChild(six);
+    divToRemove.appendChild(indicatorButton);
+    divToRemove.appendChild(one);
+    divToRemove.appendChild(two);
+    divToRemove.appendChild(three);
+    divToRemove.appendChild(removeButton);
 
-    popup.style.display = "none";
+    container.appendChild(divToRemove);
+  });
+}
 
-    book.value = "";
-    author.value = "";
-    pages.value = "";
+function updateButtonAppearance(button) {
+  const readStatus = button.getAttribute("data-read");
+  if (readStatus === "true") {
+    button.style.backgroundColor = "green";
+    button.style.color = "white";
+    button.innerHTML = "Complete";
+  } else {
+    button.style.backgroundColor = "red";
+    button.style.color = "black";
+    button.innerHTML = "Incomplete";
   }
 }
 
 container.addEventListener("click", (event) => {
   if (event.target.classList.contains("remover")) {
-    const divToRemove = event.target.parentNode;
-    const dataIndex = divToRemove
-      .querySelector(".remover")
-      .getAttribute("data-index");
+    const dataIndex = event.target.getAttribute("data-index");
+    removeBook(myLibrary[dataIndex]);
+  }
+});
 
-    myLibrary.splice(dataIndex, 1);
+function removeBook(bookToRemove) {
+  const index = myLibrary.indexOf(bookToRemove);
+  if (index !== -1) {
+    myLibrary.splice(index, 1);
+    renderBooks();
+    saveLibraryToLocalStorage();
+  }
+}
 
-    divToRemove.remove();
+pages.addEventListener("input", () => {
+  const maxPages = 10000;
+  if (parseInt(pages.value) > maxPages) {
+    pages.value = maxPages;
+  }
+});
+
+window.addEventListener("load", () => {
+  if (localStorage.getItem("library")) {
+    myLibrary = JSON.parse(localStorage.getItem("library"));
+    console.log(myLibrary);
+    renderBooks();
   }
 });
